@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1",
+    "title": "Kayaking",
+    "location": "Udupi",
+    "description": "Curated small-group experience. Certified guide. Safety first with gear included.",
+    "price": 999,
+    "image": "/images/img.png"
+  },
+  {
+    "id": "2",
+    "title": "Nandi Hills Sunrise",
+    "location": "Bangalore",
+    "description": "Curated small-group experience. Certified guide. Safety first with gear included.",
+    "price": 899,
+    "image": "/images/img.png"
+  }
+]
