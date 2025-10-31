@@ -1,14 +1,15 @@
 "use client";
 
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import { createBooking, validatePromo, fetchExperienceById } from "@/lib/api";
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const router = useRouter();
   const search = useSearchParams();
- const [discount, setDiscount] = useState(0);
+  const [discount, setDiscount] = useState(0);
+
   const expId = search.get("exp");
   const date = search.get("date");
   const time = search.get("time");
@@ -23,41 +24,38 @@ export default function CheckoutPage() {
   });
 
   const [exp, setExp] = useState<any>(null);
+
   useEffect(() => {
-  if (expId) {
-    const id = Array.isArray(expId) ? expId[0] : expId; 
-    fetchExperienceById(id)
-      .then((data) => {
-        // 🧠 Flatten the nested slot/times structure
-        const flatSlots =
-          data.slots?.flatMap((slot: any) =>
-            slot.times.map((t: any) => ({
-              date: slot.date,
-              time: t.time,
-              available: t.available,
-            }))
-          ) || [];
-        setExp({ ...data, slots: flatSlots });
-      })
-      .catch((err) => console.error("Error fetching experience:", err));
-  }
-}, [expId]);
+    if (expId) {
+      const id = Array.isArray(expId) ? expId[0] : expId;
+      fetchExperienceById(id)
+        .then((data) => {
+          const flatSlots =
+            data.slots?.flatMap((slot: any) =>
+              slot.times.map((t: any) => ({
+                date: slot.date,
+                time: t.time,
+                available: t.available,
+              }))
+            ) || [];
+          setExp({ ...data, slots: flatSlots });
+        })
+        .catch((err) => console.error("Error fetching experience:", err));
+    }
+  }, [expId]);
 
+  const handlePromoApply = async () => {
+    if (!form.promo.trim()) return alert("Enter promo code first!");
+    const res = await validatePromo(form.promo);
+    if (res.valid) {
+      setDiscount(res.discount);
+      alert(`Promo applied ✅ ${res.discount}% off`);
+    } else {
+      setDiscount(0);
+      alert("Invalid promo ❌");
+    }
+  };
 
-  // ✅ Handle promo validation
- const handlePromoApply = async () => {
-  if (!form.promo.trim()) return alert("Enter promo code first!");
-  const res = await validatePromo(form.promo);
-  if (res.valid) {
-    setDiscount(res.discount);
-    alert(`Promo applied ✅ ${res.discount}% off`);
-  } else {
-    setDiscount(0);
-    alert("Invalid promo ❌");
-  }
-};
-
-  // ✅ Handle booking confirmation
   const handleConfirm = async () => {
     const res = await createBooking({
       experienceId: expId,
@@ -93,7 +91,6 @@ export default function CheckoutPage() {
       <main className="max-w-[1440px] mx-auto px-[124px] flex flex-col md:flex-row md:gap-10">
         {/* ---------- Left form ---------- */}
         <div className="w-full md:w-[65%] bg-[#F9F9F9] rounded-xl p-8 flex flex-col gap-4 h-1/4">
-          {/* Full Name + Email */}
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex flex-col w-full">
               <label className="text-gray-700 mb-1 text-[14px]">Full name</label>
@@ -117,7 +114,6 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Promo */}
           <div className="flex flex-col md:flex-row gap-2 mt-2">
             <input
               type="text"
@@ -134,7 +130,6 @@ export default function CheckoutPage() {
             </button>
           </div>
 
-          {/* Terms */}
           <div className="flex items-center gap-2 mt-2">
             <input
               type="checkbox"
@@ -149,61 +144,61 @@ export default function CheckoutPage() {
         </div>
 
         {/* ---------- Right Summary ---------- */}
-        {/* ---------- Right Summary ---------- */}
-<div className="w-full md:w-[35%] bg-[#EFEFEF] rounded-xl p-8 flex flex-col justify-between mt-8 md:mt-0">
-  <div className="flex flex-col gap-3 text-[15px] text-gray-800">
-    <div className="flex justify-between">
-      <p>Experience</p>
-      <p>{exp?.title || "—"}</p>
-    </div>
-    <div className="flex justify-between">
-      <p>Date</p>
-      <p>{date}</p>
-    </div>
-    <div className="flex justify-between">
-      <p>Time</p>
-      <p>{time}</p>
-    </div>
-    <div className="flex justify-between">
-      <p>Qty</p>
-      <p>{qty}</p>
-    </div>
+        <div className="w-full md:w-[35%] bg-[#EFEFEF] rounded-xl p-8 flex flex-col justify-between mt-8 md:mt-0">
+          <div className="flex flex-col gap-3 text-[15px] text-gray-800">
+            <div className="flex justify-between">
+              <p>Experience</p>
+              <p>{exp?.title || "—"}</p>
+            </div>
+            <div className="flex justify-between">
+              <p>Date</p>
+              <p>{date}</p>
+            </div>
+            <div className="flex justify-between">
+              <p>Time</p>
+              <p>{time}</p>
+            </div>
+            <div className="flex justify-between">
+              <p>Qty</p>
+              <p>{qty}</p>
+            </div>
+            <div className="flex justify-between">
+              <p>Subtotal</p>
+              <p>₹{total}</p>
+            </div>
+            {discount > 0 && (
+              <div className="flex justify-between text-green-600">
+                <p>Discount ({discount}%)</p>
+                <p>-₹{(total * discount) / 100}</p>
+              </div>
+            )}
+            <div className="flex justify-between font-semibold border-t border-gray-300 pt-2">
+              <p>Total</p>
+              <p>₹{(total - (total * discount) / 100).toFixed(2)}</p>
+            </div>
+          </div>
 
-    {/* 💸 Subtotal */}
-    <div className="flex justify-between">
-      <p>Subtotal</p>
-      <p>₹{total}</p>
-    </div>
-
-    {/* ✅ Discount (only if valid promo applied) */}
-    {discount > 0 && (
-      <div className="flex justify-between text-green-600">
-        <p>Discount ({discount}%)</p>
-        <p>-₹{(total * discount) / 100}</p>
-      </div>
-    )}
-
-    {/* 🧾 Final total */}
-    <div className="flex justify-between font-semibold border-t border-gray-300 pt-2">
-      <p>Total</p>
-      <p>₹{(total - (total * discount) / 100).toFixed(2)}</p>
-    </div>
-  </div>
-
-  <button
-    disabled={!form.name || !form.email || !form.agree}
-    onClick={handleConfirm}
-    className={`w-full mt-6 h-12 rounded-lg font-medium text-[16px] transition cursor-pointer ${
-      form.name && form.email && form.agree
-        ? "bg-[#FFD643] text-black hover:bg-[#ffcd1c]"
-        : "bg-gray-300 text-gray-600 cursor-not-allowed"
-    }`}
-  >
-    Pay and Confirm
-  </button>
-</div>
-
+          <button
+            disabled={!form.name || !form.email || !form.agree}
+            onClick={handleConfirm}
+            className={`w-full mt-6 h-12 rounded-lg font-medium text-[16px] transition cursor-pointer ${
+              form.name && form.email && form.agree
+                ? "bg-[#FFD643] text-black hover:bg-[#ffcd1c]"
+                : "bg-gray-300 text-gray-600 cursor-not-allowed"
+            }`}
+          >
+            Pay and Confirm
+          </button>
+        </div>
       </main>
     </>
+  );
+}
+
+export default function CheckoutPageWrapper() {
+  return (
+    <Suspense fallback={<div>Loading checkout...</div>}>
+      <CheckoutContent />
+    </Suspense>
   );
 }
