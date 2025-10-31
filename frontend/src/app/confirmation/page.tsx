@@ -4,9 +4,10 @@ import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 
-// ✅ Disable prerendering so useSearchParams works safely
+// ✅ Disable prerendering and caching for client-only hooks
 export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const fetchCache = "force-no-store";
+export const revalidate = false;
 
 function ConfirmationContent() {
   const router = useRouter();
