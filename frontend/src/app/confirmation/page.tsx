@@ -1,7 +1,9 @@
 "use client";
 
-// 🚫 Disable static generation for this page
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
+export const dynamicParams = true;
 
 import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
@@ -24,14 +26,14 @@ export default function ConfirmationPage() {
         />
 
         <h1
-          className="text-[32px] font-normal leading-[10] mt-[8]"
+          className="text-[32px] font-normal mt-[8px]"
           style={{ fontFamily: "Inter" }}
         >
           Booking Confirmed
         </h1>
 
         <p
-          className="text-[20px] font-normal leading-6 text-gray-600 mt-2"
+          className="text-[20px] font-normal text-gray-600 mt-2"
           style={{ fontFamily: "Inter" }}
         >
           Ref ID: {refId}
