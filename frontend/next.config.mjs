@@ -1,14 +1,10 @@
-import type { NextConfig } from "next";
-
-// @ts-expect-error – these props are valid runtime options even if not in type defs
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   output: "standalone",
 
-  // @ts-expect-error
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // @ts-expect-error
   typescript: {
     ignoreBuildErrors: true,
   },
