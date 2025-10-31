@@ -1,9 +1,12 @@
+// src/app/confirmation/page.tsx
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 
-export default function ConfirmationClient() {
+export const dynamic = "force-dynamic"; // ⬅️ This disables pre-rendering completely
+
+export default function ConfirmationPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const refId = searchParams.get("ref") || "HUF56&SO";
