@@ -1,12 +1,12 @@
-// src/app/confirmation/page.tsx
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 
-export const dynamic = "force-dynamic"; // ⬅️ This disables pre-rendering completely
+export const dynamic = "force-dynamic"; // Disable pre-rendering completely
 
-export default function ConfirmationPage() {
+function ConfirmationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const refId = searchParams.get("ref") || "HUF56&SO";
@@ -36,5 +36,13 @@ export default function ConfirmationPage() {
         </button>
       </main>
     </>
+  );
+}
+
+export default function ConfirmationPage() {
+  return (
+    <Suspense fallback={<div>Loading confirmation...</div>}>
+      <ConfirmationContent />
+    </Suspense>
   );
 }
