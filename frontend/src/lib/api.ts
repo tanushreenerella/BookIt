@@ -1,4 +1,4 @@
-export const API_BASE = "http://localhost:5000/api"; // backend URL
+export const API_BASE = "https://bookit-q1so.onrender.com/api"; // backend URL
 
 export async function fetchExperiences() {
   const res = await fetch(`${API_BASE}/experiences`);
