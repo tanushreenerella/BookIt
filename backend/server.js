@@ -11,23 +11,22 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const allowedOrigins = [
-  "https://bookit-1-4x4p.onrender.com", // your frontend Render URL
-  "http://localhost:3000",              // for local testing
-];
+// ✅ FIXED: Always send CORS headers for frontend + local dev
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://bookit-1-4x4p.onrender.com"); // your frontend
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
+// ✅ Handle preflight requests (OPTIONS)
+app.options("*", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "https://bookit-1-4x4p.onrender.com");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.sendStatus(200);
+});
+
 
 app.use(express.json());
 
